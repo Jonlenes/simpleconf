@@ -1,4 +1,4 @@
-# simpleconf
+# Simpleconf
 
 [![PyPI version](https://img.shields.io/pypi/v/simpleconf.svg)](https://pypi.org/project/simpleconf/)
 [![Python versions](https://img.shields.io/pypi/pyversions/simpleconf.svg)](https://pypi.org/project/simpleconf/)
