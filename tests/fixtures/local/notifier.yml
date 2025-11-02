@@ -1,0 +1,5 @@
+channel: slack
+features:
+  digest: true
+  emoji: ":pineapple:"
+webhook: "${NOTIFIER_WEBHOOK:https://hooks.example.test}"

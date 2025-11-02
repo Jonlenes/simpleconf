@@ -1,0 +1,5 @@
+channel: email
+retries: 2
+features:
+  digest: false
+  attachments: true
