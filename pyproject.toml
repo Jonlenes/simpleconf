@@ -3,14 +3,14 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "simpleconf"
+name = "liteconf"
 version = "0.1.0"
-description = "FeatherConf: lightweight layered configuration loader with environment-aware overrides."
+description = "Lightweight layered configuration loader with environment-aware overrides."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
-  {name = "FeatherConf Authors"}
+  {name = "Jonlenes Castro"}
 ]
 dependencies = [
   "PyYAML>=6.0",
@@ -32,9 +32,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/example/featherconf"
-Repository = "https://github.com/example/featherconf"
-Issues = "https://github.com/example/featherconf/issues"
+Repository = "https://github.com/jonlenes/liteconf"
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]
