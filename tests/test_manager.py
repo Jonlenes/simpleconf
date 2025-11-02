@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from simpleconf import ConfigManager, DictOverlay, DirectorySource, EnvSource
-from simpleconf.errors import InterpolationError
+from liteconf import ConfigManager, DictOverlay, DirectorySource, EnvSource
+from liteconf.errors import InterpolationError
 
 
 def test_base_only_load(base_dir: Path) -> None:

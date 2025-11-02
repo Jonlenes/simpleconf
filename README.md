@@ -1,12 +1,12 @@
-# Simpleconf
+# LiteConf
 
-[![PyPI version](https://img.shields.io/pypi/v/simpleconf.svg)](https://pypi.org/project/simpleconf/)
-[![Python versions](https://img.shields.io/pypi/pyversions/simpleconf.svg)](https://pypi.org/project/simpleconf/)
+[![PyPI version](https://img.shields.io/pypi/v/liteconf.svg)](https://pypi.org/project/liteconf/)
+[![Python versions](https://img.shields.io/pypi/pyversions/liteconf.svg)](https://pypi.org/project/liteconf/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Build](https://github.com/jonlenes/simpleconf/actions/workflows/tests.yml/badge.svg)](https://github.com/jonlenes/simpleconf/actions/workflows/tests.yml)
-[![codecov](https://codecov.io/gh/jonlenes/simpleconf/branch/main/graph/badge.svg)](https://codecov.io/gh/jonlenes/simpleconf)
+[![Build](https://github.com/jonlenes/liteconf/actions/workflows/tests.yml/badge.svg)](https://github.com/jonlenes/liteconf/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/jonlenes/liteconf/branch/main/graph/badge.svg)](https://codecov.io/gh/jonlenes/liteconf)
 
-`simpleconf` is a lightweight configuration loader focused on deterministic override rules, explicit layering, and ergonomic access patterns. It embraces boring tooling (plain YAML/JSON/TOML) while solving the painful parts typical projects hit:
+`liteconf` is a lightweight configuration loader focused on deterministic override rules, explicit layering, and ergonomic access patterns. It embraces boring tooling (plain YAML/JSON/TOML) while solving the painful parts typical projects hit:
 
 - predictable ordering across `base/`, `local/`, environment, and runtime overrides
 - structure-preserving deep merge (lists replace, dicts merge)
@@ -22,12 +22,12 @@ Existing Python options shine in specific niches but often trade simplicity for 
 - `pydantic-settings` and `environs` center on `.env` files and type validation, not layered YAML
 - `configparser` and `ConfigObj` struggle with nested structures
 
-`simpleconf` keeps the learning curve flat while covering the 90% case of layered application configs.
+`liteconf` keeps the learning curve flat while covering the 90% case of layered application configs.
 
 ## Install
 
 ```bash
-pip install simpleconf
+pip install liteconf
 ```
 
 ## Quick Start (Practical)
@@ -82,7 +82,7 @@ Load everything with explicit source order (later wins):
 
 ```python
 from pathlib import Path
-from simpleconf import ConfigManager, DirectorySource, FileSource, EnvSource
+from liteconf import ConfigManager, DirectorySource, FileSource, EnvSource
 
 manager = ConfigManager([
     DirectorySource(Path("conf/base"), optional=False),
@@ -162,7 +162,7 @@ With `EnvSource(prefix="APP", delimiter="__", infer_types=True)`, keys map as:
 - Quick one-call loader for folders only:
 
   ```python
-  from simpleconf import load
+  from liteconf import load
   cfg = load(layers=[Path("conf/base"), Path("conf/local")])
   # Recursively loads .yml/.yaml/.json/.toml; later folders override earlier
   ```
@@ -170,7 +170,7 @@ With `EnvSource(prefix="APP", delimiter="__", infer_types=True)`, keys map as:
 - Explicit sources for full control (files, env, dict overlays, optional flags):
 
   ```python
-  from simpleconf import ConfigManager, DirectorySource, FileSource, EnvSource, DictOverlay
+  from liteconf import ConfigManager, DirectorySource, FileSource, EnvSource, DictOverlay
   manager = ConfigManager([
       DirectorySource(Path("conf/base")),
       DirectorySource(Path("conf/local")),
@@ -196,11 +196,11 @@ Recommendation: avoid keeping two files with the same stem (e.g., `messaging.*`)
 ## Project layout
 
 ```text
-simpleconf/
+liteconf/
 |-- pyproject.toml
 |-- README.md
 |-- src/
-|   \-- simpleconf/
+|   \-- liteconf/
 |       |-- __init__.py
 |       |-- core.py
 |       |-- errors.py
@@ -227,4 +227,3 @@ simpleconf/
 ## License
 
 MIT — do anything you want, just keep the notice.
-

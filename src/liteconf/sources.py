@@ -146,7 +146,7 @@ def _coerce_env_value(value: str) -> Any:
     if text.isdigit() or (text.startswith("-") and text[1:].isdigit()):
         try:
             return int(text)
-        except ValueError:
+        except ValueError:  # pragma: no cover - Python int is unbounded
             pass
     try:
         return float(text)

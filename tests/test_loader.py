@@ -6,7 +6,7 @@ from typing import Any, Dict
 import pytest
 import yaml
 
-from simpleconf import ConfigNode, load
+from liteconf import ConfigNode, load
 
 
 def _write_yaml(path: Path, payload: Dict[str, Any]) -> None:
