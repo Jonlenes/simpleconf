@@ -24,28 +24,98 @@ Existing Python options shine in specific niches but often trade simplicity for 
 pip install simpleconf
 ```
 
-## Quick start
+## Quick Start (Practical)
+
+Consider this minimal layout (two folders + one JSON):
+
+```text
+conf/
+  base/
+    service.yml
+  local/
+    service.yml
+extra.json
+```
+
+`conf/base/service.yml`
+
+```yaml
+service:
+  url: https://api.base
+  retries: 2
+  features:
+    cache: false
+    logging: warn   # defined only in base
+```
+
+`conf/local/service.yml`
+
+```yaml
+service:
+  url: https://api.local          # overrides base
+  retries: 3                      # overrides base; later overridden by extra.json
+  features:
+    cache: true                   # overrides base
+    tracing: true                 # added by local
+  webhook: "${SERVICE_WEBHOOK:https://hooks.local/notify}"  # env placeholder with default
+```
+
+`extra.json`
+
+```json
+{
+  "service": {
+    "retries": 5,                 
+    "timeout": 10,                
+    "endpoint": { "health": "/health" }  
+  }
+}
+```
+
+Load everything with explicit source order (later wins):
 
 ```python
 from pathlib import Path
-from simpleconf import ConfigManager, DirectorySource, EnvSource, DictOverlay
+from simpleconf import ConfigManager, DirectorySource, FileSource, EnvSource
 
-manager = ConfigManager(
-    sources=[
-        DirectorySource(Path("conf/base")),
-        DirectorySource(Path("conf/local")),
-        EnvSource(prefix="APP", delimiter="__", infer_types=True),
-        DictOverlay({"runtime": {"feature_flag": True}}),
-    ]
-)
+manager = ConfigManager([
+    DirectorySource(Path("conf/base"), optional=False),
+    DirectorySource(Path("conf/local"), optional=True),
+    FileSource(Path("extra.json"), optional=True),
+    # Optional: environment overlay, e.g. APP__SERVICE__TIMEOUT=30
+    EnvSource(prefix="APP", delimiter="__", infer_types=True),
+])
 
 cfg = manager.load()
 
-print(cfg.get("messaging.transport.primary"))
-# -> "smtp"
+# Value defined only in base
+assert cfg.get("service.features.logging") == "warn"
 
+# Values overridden by local
+assert cfg.service.url == "https://api.local"
+assert cfg.service.features.cache is True
+
+# Value added by local
+assert cfg.get("service.features.tracing") is True
+
+# Overridden by local, then by extra.json (final)
+assert cfg.service.retries == 5  # base=2 -> local=3 -> extra.json=5
+
+# Values provided only by extra.json
+assert cfg.service.timeout == 10
+assert cfg.service.endpoint.health == "/health"
+
+# You can use attribute-style or dotted lookups interchangeably
+assert cfg.service.url == cfg.get("service.url")
+
+# Save a copy if useful for debugging
 cfg.save("debug_config.yml")
 ```
+
+Notes:
+- The filename forms the first key: `service.yml` becomes top-level key `service`.
+- Attribute access (`cfg.service.url`) and dotted lookups (`cfg.get("service.url")`) both work.
+- Source order matters: items from later sources override earlier ones.
 
 ## Features
 
@@ -55,6 +125,31 @@ cfg.save("debug_config.yml")
 - environment overlays with case-insensitive prefix matching
 - `ConfigView` offering `.get()` with dotted paths, `.to_dict()`, `.as_dataclass()`
 - stateless loader: creating a new manager or calling `reload()` rereads from disk
+
+## Environment Overrides (Two Ways)
+
+1) Inline placeholders inside files (resolved at load time):
+
+```yaml
+# in conf/local/service.yml
+service:
+  webhook: "${SERVICE_WEBHOOK:https://hooks.local/notify}"
+```
+
+- If `SERVICE_WEBHOOK` is set in the environment, its value is used.
+- Otherwise, the default `https://hooks.local/notify` is used.
+
+2) Environment overlay with a prefix (no file edits needed):
+
+```bash
+# Let’s suppose you want to raise the timeout via an env var
+export APP__SERVICE__TIMEOUT=30
+pytest  # or run your app; the manager will pick it up
+```
+
+With `EnvSource(prefix="APP", delimiter="__", infer_types=True)`, keys map as:
+- `APP__SERVICE__TIMEOUT=30` -> `service.timeout = 30` (int)
+- `APP__SERVICE__FEATURES__CACHE=false` -> `service.features.cache = False` (bool)
 
 ## Project layout
 
